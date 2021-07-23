@@ -1,74 +1,21 @@
-import React, {useState} from 'react'
-import { useRouteMatch} from 'react-router-dom'
-import schema from './Schema'
-import {reach} from 'yup'
-import axios from 'axios'
-const initialFormValues={
-    name:'',
-    size:'',
-    sauce:'',
-    topping:'',
-    special:'',
-}
-const initialErrors={
-    name:'',
-    size:'',
-    sauce:'',
-    topping:'',
-}
+import React from 'react'
+
+
+
+
 export default function PizzaForm(props){
-    const {url}=useRouteMatch()
-    const [order, setOrder]=useState([])
-    const [formValues, setFormValues] = useState(initialFormValues)
-    const [formErrors, setFormErrors] = useState(initialErrors)
-
-    const validate = (name, value) => {
-        reach(schema, name)
-          .validate(value)
-          .then(() => setFormErrors({ ...formErrors, [name]: '' }))
-          .catch(err => setFormErrors({ ...formErrors, [name]: err.errors[0]}))
-      }
-      const inputChange = (name, value) => {
-        
-        validate(name, value)
-        setFormValues({
-          ...formValues,
-          [name]: value 
-        })
-      }
-
-      const formSubmit=()=>{
-          const newOrder={
-              name:formValues.name.trim(),
-              size:formValues.size.trim(),
-              sauce:formValues.sauce.trim(),
-              topping:formValues.topping.trim(),
-              special:formValues.special.trim()
-          }
-          postNewOrder(newOrder)
-      }
-      
-      const postNewOrder=newOrder=>{
-          axios.post('https://reqres.in/api/orders', newOrder)
-          .then(res=>{
-            setOrder(res.data)
-          })
-          .catch(err=>{
-              alert(err)
-          })
-          .finally(()=>{
-              setFormValues(initialFormValues)
-          })
-      }
+    const {
+        values,submit,change,disabled,errors,}=props
+    
       const onSubmit=evt=>{
           evt.preventDefault()
-          formSubmit()
+          submit()
       }
 
       const onChange=evt=>{
           const{name, value,type,checked}=evt.target
           const valueToUse=type==='checkbox'?checked:value
-          inputChange(name, valueToUse)
+          change(name, valueToUse)
       }
 
     return(
@@ -76,11 +23,17 @@ export default function PizzaForm(props){
         <form id={'pizza-form'} onSubmit={onSubmit}>
         <div>
             <h1>Build your own Pizza</h1>
+            <div className='errors'>
+                <div>{errors.name}</div>
+                <div>{errors.size}</div>
+                <div>{errors.sauce}</div>
+                
+            </div>
             <label htmlFor='name-input'>Name:
-            <input id='name-input' name='name'type='text' onChange={onChange}/>
+            <input id='name-input' name='name'type='text' value={values.name} onChange={onChange}/>
             </label>
             <h3>Choice of Size</h3>
-            <select id='size-dropdown' name='size' onChange={onChange}>
+            <select id='size-dropdown' name='size' value={values.size} onChange={onChange}>
                 <option value=''>Select</option>
                 <option value='small'>Small</option>
                 <option value='medium'>Medium</option>
@@ -94,6 +47,7 @@ export default function PizzaForm(props){
             type='radio'
             name='sauce'
             value='original red'
+            checked={values.sauce==='original red'}
             onChange={onChange}/>
             
             </label>
@@ -102,6 +56,7 @@ export default function PizzaForm(props){
             type='radio'
             name='sauce'
             value='Garlic Ranch'
+            checked={values.sauce==='Garlic Ranch'}
             onChange={onChange}/>
             </label>
             <label>BBQ Sauce
@@ -109,6 +64,7 @@ export default function PizzaForm(props){
             type='radio'
             name='sauce'
             value='bbq sauce'
+            checked={values.sauce==='bbq sauce'}
             onChange={onChange}/>
             </label>
             <label>Spinach Alfredo
@@ -116,6 +72,7 @@ export default function PizzaForm(props){
             type='radio'
             name='sauce'
             value='spinach alfredo'
+            checked={values.sauce==='spinach alfredo'}
             onChange={onChange}/>
             </label>
             </div>
@@ -126,35 +83,41 @@ export default function PizzaForm(props){
                 <label>Pepperoni
                     <input
                     type='checkbox'
-                    name='topping'
+                    name='pepperoni'
+                    onChange={onChange}
+                    checked={values.pepperoni}
                     />
                 </label>
                 <label>Sausage
                     <input
                     type='checkbox'
-                    name='topping'
+                    name='sausage'
                     onChange={onChange}
+                    checked={values.sausage}
                     />
                 </label>
                 <label>Canadian Bacon
                     <input
                     type='checkbox'
-                    name='topping'
+                    name='canadian'
                     onChange={onChange}
+                    checked={values.canadian}
                     />
                 </label>
                 <label>Spicy Italian Sausage
                     <input
                     type='checkbox'
-                    name='topping'
+                    name='spicyItalian'
                     onChange={onChange}
+                    checked={values.spicyItalian}
                     />
                 </label>
                 <label>Garlic Chicken
                     <input
                     type='checkbox'
-                    name='topping'
-                    
+                    name='garlic'
+                    onChange={onChange}
+                    checked={values.garlic}
                     />
                 </label>
 
@@ -162,10 +125,10 @@ export default function PizzaForm(props){
 
             <div>
                 <h3>Special Instructions</h3>
-            <input id='special-text' name='special'type='text'/>
+            <input id='special-text' name='special'type='text' value={values.special} onChange={onChange}/>
             </div>
 
-            <button>Submit</button>
+            <button id='order-button' disabled={disabled}>Submit</button>
         </div>
         </form>
         
