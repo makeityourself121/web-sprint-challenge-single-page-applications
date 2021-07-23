@@ -6,6 +6,23 @@
   height: 40vmin;
   pointer-events: none;
 }
+.pizzaImg{
+  width:100%;
+  display: flex;
+  align-content: center;
+}
+*{
+  text-decoration: none;
+}
+
+#order-pizza{
+  position: absolute;
+  left: 600px;
+  top: 550px;
+  z-index: 1;
+  padding: 10px;
+}
+
 
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {
